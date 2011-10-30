@@ -49,6 +49,7 @@ module Delayed
       self.class.min_priority = options[:min_priority] if options.has_key?(:min_priority)
       self.class.max_priority = options[:max_priority] if options.has_key?(:max_priority)
       self.class.sleep_delay = options[:sleep_delay] if options.has_key?(:sleep_delay)
+      @last = nil
     end
 
     # Every worker has a unique name which by default is the pid of the process. There are some
@@ -175,6 +176,7 @@ module Delayed
     # If no jobs are left we return nil
     def reserve_and_run_one_job
       job = Delayed::Job.reserve(self)
+      @last = Time.now
       run(job) if job
     end
   end
