@@ -55,7 +55,7 @@ module Delayed
         end
 
         # Find a few candidate jobs to run (in case some immediately get locked by others).
-        def self.find_available(worker_name, limit = 5, max_run_time = Worker.max_run_time, last = nil)
+        def self.find_available(worker_name, limit = 5, max_run_time = Worker.max_run_time)
           scope = self.ready_to_run(worker_name, max_run_time)
           scope = scope.scoped(:conditions => ['priority >= ?', Worker.min_priority]) if Worker.min_priority
           scope = scope.scoped(:conditions => ['priority <= ?', Worker.max_priority]) if Worker.max_priority
@@ -64,7 +64,7 @@ module Delayed
             scope.by_priority.all(:limit => limit).select do |job|
               result = true
               unless job.period.blank?
-                self.time?(last, Time.now, job.period, job.at)
+                self.time?(job.last_run_at, Time.now, job.period, job.at)
               end
               result
             end

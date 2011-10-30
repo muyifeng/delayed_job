@@ -49,7 +49,6 @@ module Delayed
       self.class.min_priority = options[:min_priority] if options.has_key?(:min_priority)
       self.class.max_priority = options[:max_priority] if options.has_key?(:max_priority)
       self.class.sleep_delay = options[:sleep_delay] if options.has_key?(:sleep_delay)
-      @last = nil
     end
 
     # Every worker has a unique name which by default is the pid of the process. There are some
@@ -120,7 +119,12 @@ module Delayed
     def run(job)
       runtime =  Benchmark.realtime do
         Timeout.timeout(self.class.max_run_time.to_i) { job.invoke_job }
-        job.destroy if job.period.blank?
+        if job.period.blanck?
+          job.destory
+        else
+          job.last_run_at = Time.now
+          job.save
+        end
       end
       say "#{job.name} completed after %.4f" % runtime
       return true  # did work
@@ -175,8 +179,7 @@ module Delayed
     # Run the next job we can get an exclusive lock on.
     # If no jobs are left we return nil
     def reserve_and_run_one_job
-      job = Delayed::Job.reserve(self, Worker.max_run_time, @last)
-      @last = Time.now
+      job = Delayed::Job.reserve(self)
       run(job) if job
     end
   end
