@@ -30,8 +30,7 @@ module Delayed
           update_all("locked_by = null, locked_at = null", ["locked_by = ?", worker_name])
         end
 
-        def parse_at(at)
-          say "parse_at: #{at}"
+        def self.parse_at(at)
           return unless at
           case at
           when /^(\d{1,2}):(\d\d)$/
@@ -48,8 +47,7 @@ module Delayed
           end
         end
 
-        def time?(last, t, period, at_string)
-          say "time? #{last}, period: #{period}"
+        def self.time?(last, t, period, at_string)
           at = parse_at(at)
           ellapsed_ready = (last.nil? or (t - last).to_i >= period)
           time_ready = (at.nil? or ((at[0].nil? or t.hour == at[0]) and t.min == at[1]))
@@ -66,7 +64,7 @@ module Delayed
             scope.by_priority.all(:limit => limit).select do |job|
               result = true
               unless job.period.blank?
-                time?(last, Time.now, job.period, job.at)
+                self.time?(last, Time.now, job.period, job.at)
               end
               result
             end
