@@ -119,12 +119,7 @@ module Delayed
     def run(job)
       runtime =  Benchmark.realtime do
         Timeout.timeout(self.class.max_run_time.to_i) { job.invoke_job }
-        if job.period.blank?
-          job.destory
-        else
-          job.last_run_at = Time.now
-          job.save
-        end
+        job.destory if job.period.blank?
       end
       say "#{job.name} completed after %.4f" % runtime
       return true  # did work
@@ -180,6 +175,8 @@ module Delayed
     # If no jobs are left we return nil
     def reserve_and_run_one_job
       job = Delayed::Job.reserve(self)
+      job.last_run_at = Time.now
+      job.save
       run(job) if job
     end
   end
