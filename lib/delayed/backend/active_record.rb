@@ -4,7 +4,7 @@ module Delayed
   module Backend
     module ActiveRecord
       class FailedToParse < StandardError; end;
-      
+
       # A job object that is persisted to the database.
       # Contains the work object as a YAML field.
       class Job < ::ActiveRecord::Base
@@ -31,6 +31,7 @@ module Delayed
         end
 
         def parse_at(at)
+          say "parse_at: #{at}"
           return unless at
           case at
           when /^(\d{1,2}):(\d\d)$/
@@ -48,6 +49,7 @@ module Delayed
         end
 
         def time?(last, t, period, at_string)
+          say "time? #{last}, period: #{period}"
           at = parse_at(at)
           ellapsed_ready = (last.nil? or (t - last).to_i >= period)
           time_ready = (at.nil? or ((at[0].nil? or t.hour == at[0]) and t.min == at[1]))
@@ -63,7 +65,7 @@ module Delayed
           ::ActiveRecord::Base.silence do
             scope.by_priority.all(:limit => limit).select do |job|
               result = true
-              unless job.period.nil?
+              unless job.period.blank?
                 time?(last, Time.now, job.period, job.at)
               end
               result
