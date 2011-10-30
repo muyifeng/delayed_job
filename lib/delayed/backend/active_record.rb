@@ -64,7 +64,7 @@ module Delayed
             scope.by_priority.all(:limit => limit).select do |job|
               result = true
               unless job.period.blank?
-                self.time?(job.last_run_at, Time.now, job.period, job.at)
+                result = self.time?(job.last_run_at, Time.now, job.period, job.at)
               end
               result
             end
