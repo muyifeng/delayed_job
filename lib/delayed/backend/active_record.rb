@@ -48,9 +48,9 @@ module Delayed
         end
 
         def self.time?(last, t, period, at_string)
-          at = parse_at(at)
+          at_parsed = parse_at(at_string)
           ellapsed_ready = (last.nil? or (t - last).to_i >= period)
-          time_ready = (at.nil? or ((at[0].nil? or t.hour == at[0]) and t.min == at[1]))
+          time_ready = (at_string.nil? or ((at_parsed[0].nil? or t.hour == at_parsed[0]) and t.min == at_parsed[1]))
           ellapsed_ready and time_ready
         end
 
