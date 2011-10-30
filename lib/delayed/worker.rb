@@ -119,7 +119,7 @@ module Delayed
     def run(job)
       runtime =  Benchmark.realtime do
         Timeout.timeout(self.class.max_run_time.to_i) { job.invoke_job }
-        if job.period.blanck?
+        if job.period.blank?
           job.destory
         else
           job.last_run_at = Time.now
