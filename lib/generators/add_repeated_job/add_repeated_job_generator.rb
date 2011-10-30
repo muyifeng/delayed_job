@@ -6,7 +6,7 @@ class AddRepeatedJobGenerator < Rails::Generators::Base
   include Rails::Generators::Migration
   
   def self.source_root
-     @source_root ||= File.join(File.dirname(__FILE__), 'templates')
+     @source_root ||= File.join(File.dirname(__FILE__), 'template')
   end
 
   # Implement the required interface for Rails::Generators::Migration.
