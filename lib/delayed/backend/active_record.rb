@@ -31,7 +31,7 @@ module Delayed
         end
 
         def self.parse_at(at)
-          return unless at
+          return if at.blank?
           case at
           when /^(\d{1,2}):(\d\d)$/
             hour = $1.to_i
