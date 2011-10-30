@@ -120,7 +120,7 @@ module Delayed
     def run(job)
       runtime =  Benchmark.realtime do
         Timeout.timeout(self.class.max_run_time.to_i) { job.invoke_job }
-        job.destroy
+        job.destroy if job.period.blank?
       end
       say "#{job.name} completed after %.4f" % runtime
       return true  # did work
