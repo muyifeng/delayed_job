@@ -175,8 +175,6 @@ module Delayed
     # If no jobs are left we return nil
     def reserve_and_run_one_job
       job = Delayed::Job.reserve(self)
-      job.last_run_at = Time.now
-      job.save
       run(job) if job
     end
   end
