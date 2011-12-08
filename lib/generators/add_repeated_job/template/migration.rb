@@ -3,5 +3,6 @@ class AddRepeatedJobAttributesToDelayedJobs < ActiveRecord::Migration
     add_column :delayed_jobs, :period, :integer
     add_column :delayed_jobs, :at, :string
     add_column :delayed_jobs, :last_run_at, :datetime
+    add_column :delayed_jobs, :stop_at, :datetime
   end
 end
